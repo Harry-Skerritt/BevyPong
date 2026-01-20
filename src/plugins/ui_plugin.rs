@@ -1,21 +1,28 @@
 use bevy::{
     diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin},
     prelude::*,
+    ecs::system::ParamSet,
 };
+use crate::components::score::*;
+use crate::resources::Score;
+
 
 pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup_score);
+        app
+            .add_systems(Startup, setup_score)
+            .add_systems(Startup, setup_fps);
+
+        app
+            .add_systems(Update, update_score_ui)
+            .add_systems(Update, fps_update);
+
     }
 }
 
-#[derive(Component)]
-struct Player1Score;
 
-#[derive(Component)]
-struct Player2Score;
 
 fn setup_score(
     mut commands: Commands,
@@ -77,6 +84,27 @@ fn setup_score(
 }
 
 
+fn update_score_ui(
+    score: Res<Score>,
+    mut texts: ParamSet<(
+        Query<&mut Text, With<Player1Score>>,
+        Query<&mut Text, With<Player2Score>>,
+    )>,
+) {
+    if !score.is_changed() {
+        return;
+    }
+
+    if let Ok(mut text1) = texts.p0().single_mut() {
+        text1.clear();
+        text1.push_str(&score.p1.to_string());
+    }
+
+    if let Ok(mut text2) = texts.p1().single_mut() {
+        text2.clear();
+        text2.push_str(&score.p2.to_string());
+    }
+}
 
 
 // --- FPS ----

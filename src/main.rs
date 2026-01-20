@@ -2,9 +2,10 @@ mod systems;
 mod components;
 mod plugins;
 mod events;
+mod resources;
 
 use bevy::prelude::*;
-use bevy::diagnostic::{ DiagnosticsStore, FrameTimeDiagnosticsPlugin };
+use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use plugins::{ PlayerPlugin, GamePlugin, BallPlugin, UiPlugin };
 
 #[derive(Component)]

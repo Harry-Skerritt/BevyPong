@@ -4,17 +4,28 @@ use crate::components::ball::{Ball, BallConstants, Velocity};
 use crate::components::collider::Collider;
 use crate::components::paddle::{Paddle, PaddleConstants};
 use crate::components::player::*;
-
+use crate::events::score_events::ScoreEvent;
+use crate::systems::score::*;
+use crate::resources::Score;
 
 pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
+        // Messages (Events)
+        app.add_message::<ScoreEvent>();
+
+        // Resources
+        app.insert_resource(Score { p1: 0, p2: 0 });
+
         // Startup Systems
         app
             .add_systems(Startup, spawn_players)
             .add_systems(Startup, spawn_middle_line)
             .add_systems(Startup, spawn_ball);
+
+        // Update Systems
+        app.add_systems(Update, update_score);
     }
 }
 
@@ -38,7 +49,7 @@ fn spawn_players(
             ..default()
         },
         Transform {
-            translation: Vec3::new(PaddleConstants::X_OFFSET, 0.0, 0.0),
+            translation: Vec3::new(PaddleConstants::X_OFFSET, 0.0, 1.0),
             ..default()
         },
         GlobalTransform::default(),
@@ -58,7 +69,7 @@ fn spawn_players(
             ..default()
         },
         Transform {
-            translation: Vec3::new(-PaddleConstants::X_OFFSET, 0.0, 0.0),
+            translation: Vec3::new(-PaddleConstants::X_OFFSET, 0.0, 1.0),
             ..default()
         },
         GlobalTransform::default(),
@@ -111,7 +122,7 @@ fn spawn_ball (
             custom_size: Some(Vec2::splat(BallConstants::RADIUS * 2.0)),
             ..default()
         },
-        Transform::default(),
+        Transform::from_xyz(0.0, 0.0, 1.0),
         GlobalTransform::default(),
         Collider {
             size: Vec2::splat(BallConstants::RADIUS * 2.0),

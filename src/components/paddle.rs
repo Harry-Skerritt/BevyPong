@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 
 pub struct PaddleConstants;
+
 impl PaddleConstants {
     pub const WIDTH: f32 = 20.0;
     pub const HEIGHT: f32 = 100.0;

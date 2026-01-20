@@ -3,7 +3,7 @@ use bevy::window::PrimaryWindow;
 use crate::components::paddle::{ Paddle, PaddleConstants };
 use crate::components::ball::{ Ball, Velocity };
 use crate::components::collider::Collider;
-
+use crate::events::score_events::ScoreEvent;
 
 // --- PADDLE ---
 pub fn clamp_paddle_collisions(
@@ -26,6 +26,7 @@ pub fn clamp_paddle_collisions(
 pub fn ball_window_collisions(
     windows: Query<&Window, With<PrimaryWindow>>,
     mut query: Query<(&mut Transform, &mut Velocity, &Collider), With<Ball>>,
+    mut writer: MessageWriter<ScoreEvent>,
 ) {
     let window = windows.single().unwrap();
     let half_height = window.resolution.height() / 2.0;
@@ -46,9 +47,11 @@ pub fn ball_window_collisions(
         // Left / Right
         if transform.translation.x + half_ball.x > half_width {
             println!("Player 1 scores!");
+            writer.write(ScoreEvent::Player1);
             transform.translation = Vec3::ZERO;
         } else if transform.translation.x - half_ball.x < -half_width {
             println!("Player 2 scores!");
+            writer.write(ScoreEvent::Player2);
             transform.translation = Vec3::ZERO;
         }
     }
