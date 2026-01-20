@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use crate::events::score_events::ScoreEvent;
-use crate::resources::Score;
+use crate::resources::{AudioAssets, Score};
 use crate::resources::score::WinTimer;
 use crate::states::game_state::GameState;
 
@@ -9,6 +9,7 @@ pub fn update_score(
     mut score: ResMut<Score>,
     mut next_state: ResMut<NextState<GameState>>,
     mut commands: Commands,
+    sounds: Res<AudioAssets>,
 ) {
     for event in reader.read() {
         match event {
@@ -27,6 +28,8 @@ pub fn update_score(
 
         if let Some(player_id) = winner {
             next_state.set(GameState::WinnerScreen);
+
+            commands.spawn(AudioPlayer::new(sounds.win_sound.clone()));
 
             commands.insert_resource(WinTimer {
                 timer: Timer::from_seconds(3.0, TimerMode::Once),

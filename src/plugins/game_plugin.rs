@@ -6,7 +6,7 @@ use crate::components::paddle::{Paddle, PaddleConstants};
 use crate::components::player::*;
 use crate::events::score_events::ScoreEvent;
 use crate::systems::score::*;
-use crate::resources::Score;
+use crate::resources::{ Score, AudioAssets };
 use crate::resources::score::WinTimer;
 use crate::states::game_state::GameState;
 
@@ -34,7 +34,8 @@ impl Plugin for GamePlugin {
             .add_systems(Startup, (
                 spawn_players,
                 spawn_middle_line,
-                spawn_ball
+                spawn_ball,
+                load_audio
             ));
 
         // Update Systems
@@ -146,8 +147,19 @@ fn spawn_ball (
         ));
 }
 
+// --- AUDIO ---
+fn load_audio(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+) {
+    commands.insert_resource(AudioAssets {
+        paddle_hit: asset_server.load("audio/ball_collision.wav"),
+        score_point: asset_server.load("audio/score_point.wav"),
+        win_sound: asset_server.load("audio/win_sound.wav"),
+    });
+}
 
-
+// --- WINNING ---
 fn tick_win_timer(
     time: Res<Time>,
     mut win_resource: ResMut<WinTimer>,

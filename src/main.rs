@@ -5,8 +5,6 @@ mod events;
 mod resources;
 mod states;
 
-
-
 use bevy::prelude::*;
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use plugins::{ PlayerPlugin, GamePlugin, BallPlugin, UiPlugin };

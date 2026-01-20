@@ -7,7 +7,7 @@ edition = "2024"
 default = []
 
 [dependencies]
-bevy = "0.18.0"
+bevy = { version = "0.18.0", features = ["wav"] }
 
 [workspace]
 
