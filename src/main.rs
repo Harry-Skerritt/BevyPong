@@ -3,6 +3,9 @@ mod components;
 mod plugins;
 mod events;
 mod resources;
+mod states;
+
+
 
 use bevy::prelude::*;
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;

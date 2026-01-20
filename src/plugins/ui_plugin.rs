@@ -5,25 +5,28 @@ use bevy::{
 };
 use crate::components::score::*;
 use crate::resources::Score;
-
+use crate::resources::score::WinTimer;
+use crate::states::game_state::GameState;
 
 pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
+        // Constant UI Ele,ents
         app
-            .add_systems(Startup, setup_score)
-            .add_systems(Startup, setup_fps);
+            .add_systems(Startup, (setup_score, setup_fps))
+            .add_systems(Update, (update_score_ui, fps_update));
 
+        // Conditional Elements
         app
-            .add_systems(Update, update_score_ui)
-            .add_systems(Update, fps_update);
+            .add_systems(OnEnter(GameState::WinnerScreen), setup_winner_ui)
+            .add_systems(OnExit(GameState::WinnerScreen), cleanup_winner_ui);
 
     }
 }
 
 
-
+// --- SCORE ---
 fn setup_score(
     mut commands: Commands,
     asset_server: Res<AssetServer>
@@ -106,6 +109,47 @@ fn update_score_ui(
     }
 }
 
+
+// --- WINNER ----
+fn setup_winner_ui(
+    mut commands: Commands,
+    win_timer: Res<WinTimer>,
+    asset_server: Res<AssetServer>,
+) {
+    commands
+        .spawn((
+            Node {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
+                position_type: PositionType::Absolute,
+                ..default()
+            },
+            BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.8)),
+            WinnerUi,
+        ))
+        .with_children(|parent| {
+            parent.spawn((
+                Text::new(format!("PLAYER {} WINS!", win_timer.winner)),
+                TextFont {
+                    font: asset_server.load("fonts/PixelifySans-Bold.ttf").into(),
+                    font_size: 80.0,
+                    ..default()
+                },
+                TextColor(Color::WHITE),
+            ));
+        });
+}
+
+fn cleanup_winner_ui(
+    mut commands: Commands,
+    query: Query<Entity, With<WinnerUi>>,
+) {
+    for entity in &query {
+        commands.entity(entity).despawn();
+    }
+}
 
 // --- FPS ----
 #[derive(Component)]

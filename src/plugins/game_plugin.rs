@@ -7,25 +7,41 @@ use crate::components::player::*;
 use crate::events::score_events::ScoreEvent;
 use crate::systems::score::*;
 use crate::resources::Score;
+use crate::resources::score::WinTimer;
+use crate::states::game_state::GameState;
 
 pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
+        // states
+        app.init_state::<GameState>();
+
         // Messages (Events)
-        app.add_message::<ScoreEvent>();
+        app
+            .add_message::<ScoreEvent>();
 
         // Resources
-        app.insert_resource(Score { p1: 0, p2: 0 });
+        app.insert_resource(
+            Score {
+                p1: 0,
+                p2: 0,
+                win_score: 5,
+            });
 
         // Startup Systems
         app
-            .add_systems(Startup, spawn_players)
-            .add_systems(Startup, spawn_middle_line)
-            .add_systems(Startup, spawn_ball);
+            .add_systems(Startup, (
+                spawn_players,
+                spawn_middle_line,
+                spawn_ball
+            ));
 
         // Update Systems
-        app.add_systems(Update, update_score);
+        app
+            .add_systems(Update, update_score)
+            .add_systems(Update, tick_win_timer.run_if(in_state(GameState::WinnerScreen)));
+
     }
 }
 
@@ -128,4 +144,25 @@ fn spawn_ball (
             size: Vec2::splat(BallConstants::RADIUS * 2.0),
         },
         ));
+}
+
+
+
+fn tick_win_timer(
+    time: Res<Time>,
+    mut win_resource: ResMut<WinTimer>,
+    mut score: ResMut<Score>,
+    mut next_state: ResMut<NextState<GameState>>,
+    mut ball_query: Query<&mut Transform, With<Ball>>,
+) {
+    if win_resource.timer.tick(time.delta()).just_finished() {
+        score.p1 = 0;
+        score.p2 = 0;
+
+        if let Ok(mut transform) = ball_query.single_mut() {
+            transform.translation = Vec3::ZERO;
+        }
+
+        next_state.set(GameState::Playing);
+    }
 }

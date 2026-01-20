@@ -6,3 +6,6 @@ pub struct Player1Score;
 
 #[derive(Component)]
 pub struct Player2Score;
+
+#[derive(Component)]
+pub struct WinnerUi;
