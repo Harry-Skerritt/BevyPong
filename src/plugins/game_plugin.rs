@@ -23,8 +23,8 @@ fn spawn_players(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
 ) {
-    let p1_handle = asset_server.load("sprites/paddleRed.png");
-    let p2_handle = asset_server.load("sprites/paddleBlue.png");
+    let p1_handle = asset_server.load("sprites/paddleBlue.png");
+    let p2_handle = asset_server.load("sprites/paddleRed.png");
 
 
     // Player 1

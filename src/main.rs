@@ -1,10 +1,11 @@
 mod systems;
 mod components;
 mod plugins;
+mod events;
 
 use bevy::prelude::*;
-use plugins::{ PlayerPlugin, GamePlugin, BallPlugin };
-
+use bevy::diagnostic::{ DiagnosticsStore, FrameTimeDiagnosticsPlugin };
+use plugins::{ PlayerPlugin, GamePlugin, BallPlugin, UiPlugin };
 
 #[derive(Component)]
 struct MainCamera;
@@ -28,9 +29,11 @@ fn main() {
 
     // Plugins
     app
+        .add_plugins(FrameTimeDiagnosticsPlugin::default())
         .add_plugins(GamePlugin)
         .add_plugins(PlayerPlugin)
-        .add_plugins(BallPlugin);
+        .add_plugins(BallPlugin)
+        .add_plugins(UiPlugin);
 
 
     // Systems
