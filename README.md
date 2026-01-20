@@ -1,5 +1,7 @@
-# Bevy 0.18.0 Template
+# Pong in Bevy
 
-A template project for the Bevy framework.
+Pong written in Rust using the Bevy framework to help me learn Rust and Bevy.
 
-For **v0.18.0**
+A rewrite of a version I made using C++ and SFML: [Original Pong Project](https://github.com/UWEGames-GiC/pong-24-25-Harry-Skerritt)
+
+Bevy: [Link to Bevy Engine](https://github.com/bevyengine/bevy)
