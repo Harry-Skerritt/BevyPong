@@ -1,6 +1,6 @@
 [package]
-name = "LearnBevy"
-version = "0.1.0"
+name = "BevyPong"
+version = "1.0.0"
 edition = "2024"
 
 [features]
