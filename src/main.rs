@@ -3,8 +3,8 @@ mod components;
 mod plugins;
 
 use bevy::prelude::*;
-use plugins::{ PlayerPlugin, GamePlugin
-};
+use plugins::{ PlayerPlugin, GamePlugin, BallPlugin };
+
 
 #[derive(Component)]
 struct MainCamera;
@@ -29,7 +29,10 @@ fn main() {
     // Plugins
     app
         .add_plugins(GamePlugin)
-        .add_plugins(PlayerPlugin);
+        .add_plugins(PlayerPlugin)
+        .add_plugins(BallPlugin);
+
+
     // Systems
     app.add_systems(Startup, camera_setup);
 

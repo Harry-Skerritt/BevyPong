@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use crate::components::ball::{Ball, Velocity};
 use crate::components::player::*;
 use crate::components::paddle::*;
 pub fn paddle_movement_system(
@@ -14,5 +15,15 @@ pub fn paddle_movement_system(
                 MovementDirection::Down => transform.translation.y -= speed * time.delta_secs(),
             }
         }
+    }
+}
+
+pub fn ball_movement_system(
+    time: Res<Time>,
+    mut query: Query<(&mut Transform, &Velocity), With<Ball>>,
+) {
+    for (mut transform, Velocity(velocity)) in  &mut query {
+        transform.translation.x += velocity.x * time.delta_secs();
+        transform.translation.y += velocity.y * time.delta_secs();
     }
 }

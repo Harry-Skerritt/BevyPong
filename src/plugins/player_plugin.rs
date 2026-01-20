@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use crate::systems::collisions::clamp_paddle_collisions;
 use crate::systems::input::keyboard_input_handler;
 use crate::systems::movement::paddle_movement_system;
 
@@ -8,6 +9,7 @@ impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_systems(Update, keyboard_input_handler)
-            .add_systems(Update, paddle_movement_system);
+            .add_systems(Update, paddle_movement_system)
+            .add_systems(Update, clamp_paddle_collisions);
     }
 }

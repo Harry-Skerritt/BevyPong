@@ -1,18 +1,20 @@
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
+use crate::components::ball::{Ball, BallConstants, Velocity};
 use crate::components::collider::Collider;
 use crate::components::paddle::{Paddle, PaddleConstants};
 use crate::components::player::*;
-use crate::systems::collisions::*;
 
 
 pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, spawn_players)
+        // Startup Systems
+        app
+            .add_systems(Startup, spawn_players)
             .add_systems(Startup, spawn_middle_line)
-            .add_systems(Update, clamp_paddle_collisions);
+            .add_systems(Startup, spawn_ball);
     }
 }
 
@@ -69,19 +71,15 @@ fn spawn_players(
 
 fn spawn_middle_line(
     mut commands: Commands,
-    query_window: Query<&Window, With<PrimaryWindow>>,
+    windows: Query<&Window, With<PrimaryWindow>>,
 ) {
-    let window = match query_window.single() {
-        Ok(window) => window,
-        Err(_) => return
-    };
-    
+    let window = windows.single().unwrap();
     let window_height = window.resolution.height();
 
     let dash_width = 4.0;
     let dash_height = 20.0;
     let dash_spacing = 20.0;
-    let num_dashes = (window_height / (dash_height + dash_spacing)) as i32; // Todo: Get window height here
+    let num_dashes = (window_height / (dash_height + dash_spacing)) as i32;
 
     for i in 0..num_dashes {
         let y = -(window_height / 2.0) + i as f32 * (dash_height + dash_spacing) + dash_height / 2.0;
@@ -97,4 +95,26 @@ fn spawn_middle_line(
             }
         ));
     }
+}
+
+fn spawn_ball (
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+) {
+    let ball_handle = asset_server.load("sprites/ball.png");
+
+    commands.spawn((
+        Ball,
+        Velocity(BallConstants::START_VELOCITY),
+        Sprite {
+            image: ball_handle,
+            custom_size: Some(Vec2::splat(BallConstants::RADIUS * 2.0)),
+            ..default()
+        },
+        Transform::default(),
+        GlobalTransform::default(),
+        Collider {
+            size: Vec2::splat(BallConstants::RADIUS * 2.0),
+        },
+        ));
 }
